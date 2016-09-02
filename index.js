@@ -134,4 +134,4 @@ class Connectivity extends EventEmitter {
     }
 }
 
-module.exports = Connectivity;
+module.exports = IsConnected;
