@@ -1,0 +1,25 @@
+{
+  "name": "is-connected",
+  "version": "0.0.1",
+  "description": "check if connected to internet on regular intervals and emit events accordingly.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ashishjshetty/is-connected.git"
+  },
+  "keywords": [
+    "internet",
+    "connected",
+    "ping",
+    "dns"
+  ],
+  "author": "Ashish Shetty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ashishjshetty/is-connected/issues"
+  },
+  "homepage": "https://github.com/Ashishjshetty/is-connected#readme"
+}
