@@ -1,6 +1,6 @@
 'use strict';
 const EventEmitter = require('events').EventEmitter;
-const resolve = require('dns').resolve;
+const lookup = require('dns').lookup;
 const exec = require('child_process').exec;
 /**
  * IsConnected check if connected to internet on regular intervals and emit events accordingly.
@@ -38,7 +38,7 @@ class IsConnected extends EventEmitter {
          */
     _dns() {
             setInterval(function() {
-                resolve(this.hostName, function(err) {
+                lookup(this.hostName, function(err) {
                     if (err) {
                         this.state = false;
                         this.emit('disconnected');
