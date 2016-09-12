@@ -1,10 +1,10 @@
-# is-connected
+### is-connected
 check if connected to internet on regular intervals and emit events accordingly. Currently you can check for internet using DNS and PING more methods will be added in future, suggestions are welcome.
 
-# Installation
+### Installation
 	npm install is-connected --save
 
-# Example
+### Example
 
 		'use strict';
 		let IsConnected = require('is-connected');
@@ -16,7 +16,7 @@ check if connected to internet on regular intervals and emit events accordingly.
 		    console.log('internet not connected');
 		}).init('dns');
 
-# Options
+### Options
 
 		// Defaults: check_interval=1000ms (milliseconds),
 		// host_name=google.com (address or ip)
@@ -27,5 +27,6 @@ check if connected to internet on regular intervals and emit events accordingly.
 		isConnectivity.init('dns');
 		isConnectivity.init('ping');
 
-
+### Note
+windows has shown a difference in behaviour as compared to linux, has been tested on linux.
 

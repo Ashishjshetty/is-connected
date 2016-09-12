@@ -1,7 +1,10 @@
 'use strict';
 const EventEmitter = require('events').EventEmitter;
 const resolve = require('dns').resolve;
+const lookup = require('dns').lookup;
 const exec = require('child_process').exec;
+const os = require('os');
+
 /**
  * IsConnected check if connected to internet on regular intervals and emit events accordingly.
  */
@@ -35,19 +38,36 @@ class IsConnected extends EventEmitter {
         }
         /**
          * dns method to check internet connectivity emits 2 events connected|disconnected
+         * used dns lookup instead of resolve for any OS other than linux as there was a
+         * change in behaviour in windows. raised in issue #1
          */
     _dns() {
-            setInterval(function() {
-                resolve(this.hostName, function(err) {
-                    if (err) {
-                        this.state = false;
-                        this.emit('disconnected');
-                    } else {
-                        this.state = true;
-                        this.emit('connected');
-                    }
-                }.bind(this));
-            }.bind(this), this.checkInterval);
+            if (os.platform() === 'linux') {
+                setInterval(function() {
+                    resolve(this.hostName, function(err) {
+                        if (err) {
+                            this.state = false;
+                            this.emit('disconnected');
+                        } else {
+                            this.state = true;
+                            this.emit('connected');
+                        }
+                    }.bind(this));
+                }.bind(this), this.checkInterval);
+            } else {
+                setInterval(function() {
+                    lookup(this.hostName, function(err) {
+                        if (err) {
+                            this.state = false;
+                            this.emit('disconnected');
+                        } else {
+                            this.state = true;
+                            this.emit('connected');
+                        }
+                    }.bind(this));
+                }.bind(this), this.checkInterval);
+            }
+
         }
         /**
          * ping method to check internet connectivity emits 2 events connected|disconnected
