@@ -43,7 +43,7 @@ class IsConnected extends EventEmitter {
          */
     _dns() {
             if (os.platform() === 'linux') {
-                setInterval(function() {
+                setTimeout(function() {
                     resolve(this.hostName, function(err) {
                         if (err) {
                             this.state = false;
@@ -52,10 +52,11 @@ class IsConnected extends EventEmitter {
                             this.state = true;
                             this.emit('connected');
                         }
+                        process.nextTick(function() { this._dns(); }.bind(this));
                     }.bind(this));
                 }.bind(this), this.checkInterval);
             } else {
-                setInterval(function() {
+                setTimeout(function() {
                     lookup(this.hostName, function(err) {
                         if (err) {
                             this.state = false;
@@ -64,6 +65,7 @@ class IsConnected extends EventEmitter {
                             this.state = true;
                             this.emit('connected');
                         }
+                        process.nextTick(function() { this._dns(); }.bind(this));
                     }.bind(this));
                 }.bind(this), this.checkInterval);
             }
@@ -74,7 +76,7 @@ class IsConnected extends EventEmitter {
          */
     _ping() {
         let cmd = 'ping -c 1 :hostName'.replace(/:hostName/, this.hostName);
-        setInterval(function() {
+        setTimeout(function() {
             exec(cmd, function ping(err) {
                 if (err) {
                     this.state = false;
@@ -83,6 +85,7 @@ class IsConnected extends EventEmitter {
                     this.state = true;
                     this.emit('connected');
                 }
+                process.nextTick(function() { this._ping(); }.bind(this));
             }.bind(this));
         }.bind(this), this.checkInterval);
     }
