@@ -12,13 +12,15 @@ class IsConnected extends EventEmitter {
     /**
      * constructs IsConnected
      * @param  {Integer} checkInterval check interval defaults to 10000 seconds ie 10 seconds
-     * @param  {String} hostName      hostname of server to check internet using
+     * @param  {String} hostName       hostname of server to check internet using
+     * @param  {Integer} pingTimeout   if using ping, the number of seconds to wait for response, defaults to 5
      */
-    constructor(checkInterval, hostName) {
+    constructor(checkInterval, hostName, pingTimeout) {
             super();
             this.checkInterval = (checkInterval) ? checkInterval : 10000;
             this.state = false;
             this.hostName = (hostName) ? hostName : 'www.google.com';
+            this.pingTimeout = pingTimeout || 5;
         }
         /**
          * start Connectivity monitoring process
@@ -75,7 +77,12 @@ class IsConnected extends EventEmitter {
          * ping method to check internet connectivity emits 2 events connected|disconnected
          */
     _ping() {
-        let cmd = 'ping -c 1 :hostName'.replace(/:hostName/, this.hostName);
+        let cmd;
+        if (os.platform() === 'win32') {
+          cmd = 'ping -n 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout * 1000);
+        } else {
+          cmd = 'ping -c 1 -t :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout);
+        }
         setTimeout(function() {
             exec(cmd, function ping(err) {
                 if (err) {
