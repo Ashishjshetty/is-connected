@@ -79,13 +79,14 @@ class IsConnected extends EventEmitter {
     _ping() {
         let cmd;
         if (os.platform() === 'win32') {
-          cmd = 'ping -n 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout * 1000);
+            cmd = 'ping -n 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout * 1000);
         } else {
-          cmd = 'ping -c 1 -t :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout);
+            cmd = 'ping -c 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout);
         }
         setTimeout(function() {
             exec(cmd, function ping(err) {
                 if (err) {
+                    console.log(err);
                     this.state = false;
                     this.emit('disconnected');
                 } else {
