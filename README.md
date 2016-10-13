@@ -20,8 +20,9 @@ check if connected to internet on regular intervals and emit events accordingly.
 
 		// Defaults: check_interval=1000ms (milliseconds),
 		// host_name=google.com (address or ip)
-		let isConnectivity = new IsConnected(<check_interval>,<host_name>); 
-		
+		// ping_timeout=5 (timeout in seconds for ping command, if ping specified on init)
+		let isConnectivity = new IsConnected(<check_interval>,<host_name>,<ping_timeout);
+
 		// Use init to start, has 2 options dns or ping, defaults to dns
 		isConnectivity.init() // defaults to DNS
 		isConnectivity.init('dns');
@@ -29,4 +30,3 @@ check if connected to internet on regular intervals and emit events accordingly.
 
 ### Note
 windows has shown a difference in behaviour as compared to linux, has been tested on linux.
-
