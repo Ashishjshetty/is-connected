@@ -86,7 +86,6 @@ class IsConnected extends EventEmitter {
         setTimeout(function() {
             exec(cmd, function ping(err) {
                 if (err) {
-                    console.log(err);
                     this.state = false;
                     this.emit('disconnected');
                 } else {
