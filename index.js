@@ -26,13 +26,13 @@ class IsConnected extends EventEmitter {
          * start Connectivity monitoring process
          * @param  {String} type type of check dns|ping
          */
-    init(type) {
+    init(type, forceType) {
             switch (type) {
                 case 'dns':
-                    this._dns();
+                    this._dns(forceType);
                     break;
                 case 'ping':
-                    this._ping();
+                    this._ping(forceType);
                     break;
                 default:
                     this._dns();
@@ -41,44 +41,52 @@ class IsConnected extends EventEmitter {
         /**
          * dns method to check internet connectivity emits 2 events connected|disconnected
          * used dns lookup instead of resolve for any OS other than linux as there was a
-         * change in behaviour in windows. raised in issue #1
+         * change of behaviour in windows. raised in issue #1
          */
-    _dns() {
-            if (os.platform() === 'linux') {
-                setTimeout(function() {
-                    resolve(this.hostName, function(err) {
-                        if (err) {
-                            this.state = false;
-                            this.emit('disconnected');
-                        } else {
-                            this.state = true;
-                            this.emit('connected');
-                        }
-                        process.nextTick(function() { this._dns(); }.bind(this));
-                    }.bind(this));
-                }.bind(this), this.checkInterval);
-            } else {
-                setTimeout(function() {
-                    lookup(this.hostName, function(err) {
-                        if (err) {
-                            this.state = false;
-                            this.emit('disconnected');
-                        } else {
-                            this.state = true;
-                            this.emit('connected');
-                        }
-                        process.nextTick(function() { this._dns(); }.bind(this));
-                    }.bind(this));
-                }.bind(this), this.checkInterval);
-            }
-
+    _dns(forceType) {
+            let dnsType = (os.platform() === 'linux') ? 'resolve' : 'lookup';
+            dnsType = (forceType === undefined) ? dnsType : forceType;
+            setTimeout(function() {
+                this._dnsTypeSelect(dnsType);
+            }.bind(this), this.checkInterval);
         }
         /**
-         * ping method to check internet connectivity emits 2 events connected|disconnected
+         * decide which type of dns request to do
+         * @param  {String} type type of dns request lookup|resolve
          */
-    _ping() {
+    _dnsTypeSelect(type) {
+            switch (type) {
+                case 'lookup':
+                    lookup(this.hostName, this._dnsFetch.bind(this));
+                    break;
+                case 'resolve':
+                    resolve(this.hostName, this._dnsFetch.bind(this));
+                    break;
+                default:
+                    throw new Error('invalid Type error');
+            }
+        }
+        /**
+         * Callback for Node dns method
+         * @param  {Object} err error object
+         */
+    _dnsFetch(err) {
+        if (err) {
+            this.state = false;
+            this.emit('disconnected');
+        } else {
+            this.state = true;
+            this.emit('connected');
+        }
+        process.nextTick(function() { this._dns(); }.bind(this));
+    }
+
+    /**
+     * ping method to check internet connectivity emits 2 events connected|disconnected
+     */
+    _ping(forceType) {
         let cmd;
-        if (os.platform() === 'win32') {
+        if (os.platform() === 'win32' || forceType === 'win32') {
             cmd = 'ping -n 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout * 1000);
         } else {
             cmd = 'ping -c 1 -w :pingTimeout :hostName'.replace(/:hostName/, this.hostName).replace(/:pingTimeout/, this.pingTimeout);
