@@ -25,8 +25,8 @@ check if connected to internet on regular intervals and emit events accordingly.
 
 		// Use init to start, has 2 options dns or ping, defaults to dns
 		isConnectivity.init() // defaults to DNS
-		isConnectivity.init('dns');
-		isConnectivity.init('ping');
+		isConnectivity.init('dns'[,resolve or lookup]); //optional params resolve | lookup
+		isConnectivity.init('ping'[,win32 or linux]);   //optional params win32 | linux 
 
 ### Note
 windows has shown a difference in behaviour as compared to linux, has been tested on linux.

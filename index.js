@@ -24,7 +24,8 @@ class IsConnected extends EventEmitter {
         }
         /**
          * start Connectivity monitoring process
-         * @param  {String} type type of check dns|ping
+         * @param  {String} type        type of check dns|ping
+         * @param  {String} forceType   type of check
          */
     init(type, forceType) {
             switch (type) {
@@ -42,6 +43,8 @@ class IsConnected extends EventEmitter {
          * dns method to check internet connectivity emits 2 events connected|disconnected
          * used dns lookup instead of resolve for any OS other than linux as there was a
          * change of behaviour in windows. raised in issue #1
+         * 
+         * @param  {String} fourceType type of check resolve|lookup
          */
     _dns(forceType) {
             let dnsType = (os.platform() === 'linux') ? 'resolve' : 'lookup';
@@ -83,6 +86,7 @@ class IsConnected extends EventEmitter {
 
     /**
      * ping method to check internet connectivity emits 2 events connected|disconnected
+     * @param  {String} forceType   type of check win32|linux
      */
     _ping(forceType) {
         let cmd;
